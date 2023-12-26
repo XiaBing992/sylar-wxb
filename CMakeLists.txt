@@ -66,7 +66,8 @@ file(GLOB SRC "${CMAKE_SOURCE_DIR}/sylar/*.cc")
 
 
 # ------------------------------------ deps --------------------------------------------
-
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/deps/3rd/yaml-cpp/include)
+LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/deps/3rd/yaml-cpp/lib)
 
 # ----------------------------------- other --------------------------------------------
 set(CMAKE_CXX_FLAGS ${CMAKE_COMMON_FLAGS})
@@ -79,5 +80,5 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 #------------------------------------ exec ----------------------------------------------
 add_library(sylar ${SRC})
-target_link_libraries(sylar pthread)
+target_link_libraries(sylar pthread yaml-cpp)
 # add_subdirectory(tests)

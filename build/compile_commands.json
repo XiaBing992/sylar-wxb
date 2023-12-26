@@ -1,8 +1,0 @@
-[
-{
-  "directory": "/home/wxb/computerprograms/c++/sylar-wxb/build",
-  "command": "/usr/bin/c++ -DLINUX -DUNIX -I/home/wxb/computerprograms/c++/sylar-wxb/include -I/home/wxb/computerprograms/c++/sylar-wxb/sylar   -O3 -g -fipa-pta -flto=auto -std=gnu++17 -o CMakeFiles/sylar.dir/sylar/log.cc.o -c /home/wxb/computerprograms/c++/sylar-wxb/sylar/log.cc",
-  "file": "/home/wxb/computerprograms/c++/sylar-wxb/sylar/log.cc",
-  "output": "CMakeFiles/sylar.dir/sylar/log.cc.o"
-}
-]

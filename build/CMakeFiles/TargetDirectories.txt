@@ -1,3 +1,0 @@
-/home/wxb/computerprograms/c++/sylar-wxb/build/CMakeFiles/sylar.dir
-/home/wxb/computerprograms/c++/sylar-wxb/build/CMakeFiles/edit_cache.dir
-/home/wxb/computerprograms/c++/sylar-wxb/build/CMakeFiles/rebuild_cache.dir
