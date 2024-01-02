@@ -66,8 +66,9 @@ file(GLOB SRC "${CMAKE_SOURCE_DIR}/sylar/*.cc")
 
 
 # ------------------------------------ deps --------------------------------------------
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/deps/3rd/yaml-cpp/include)
-LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/deps/3rd/yaml-cpp/lib)
+set(3RD ${CMAKE_SOURCE_DIR}/deps/3rd/)
+include_directories(${3RD}/yaml-cpp/include ${3RD}/boost_1_84_0/include)
+link_directories(${3RD}/yaml-cpp/lib ${3RD}/boost_1_84_0/lib)
 
 # ----------------------------------- other --------------------------------------------
 set(CMAKE_CXX_FLAGS ${CMAKE_COMMON_FLAGS})
