@@ -2,7 +2,7 @@
  * @Author: XiaBing
  * @Date: 2023-12-22 19:24:56
  * @LastEditors: XiaBing
- * @LastEditTime: 2024-01-02 14:57:12
+ * @LastEditTime: 2024-01-03 16:55:03
  * @FilePath: /sylar-wxb/sylar/log.h
  * @Description: 
  */
@@ -25,6 +25,7 @@
 #include "singleton.h"
 #include "thread.h"
 #include "util.h"
+#include "mutex.h"
 
 /**
  * @brief 使用流式方式将日志写入logger 
@@ -315,7 +316,7 @@ class LogAppender
 friend class Logger;
 public:
   typedef std::shared_ptr<LogAppender> ptr;
-  //typedef Spinlock MutexType;
+  typedef Spinlock MutexType;
 
   virtual ~LogAppender() {}
 
@@ -345,7 +346,7 @@ protected:
 
   bool has_formatter_ = false; // 是否有自己的日志格式器
 
-  // MutexType mutex_;
+  MutexType mutex_;
 
   LogFormatter::ptr formatter_; // 日志格式器
 };
@@ -358,7 +359,7 @@ class Logger : public std::enable_shared_from_this<Logger>
 friend class LoggerManager;
 public:
   typedef std::shared_ptr<Logger> ptr;
-  //typedef Spinlock MutexType;
+  typedef Spinlock MutexType;
 
   Logger(const std::string& name = "root");
 
@@ -418,7 +419,7 @@ private:
 
   LogLevel::Level level_;
 
-  //MutexType mutex_;
+  MutexType mutex_;
 
   std::list<LogAppender::ptr> appenders_; // 日志目标集合
 
@@ -457,7 +458,7 @@ public:
   /**
    * @brief 重新弄打开日志文件 
    */  
-  //bool reopen();
+  // bool reopen();
 
 private:
   std::string filename_;
@@ -473,7 +474,7 @@ private:
 class LoggerManager
 {
 public:
-  // typedef Spinlock MutexType;
+  typedef Spinlock MutexType;
 
   LoggerManager();
 
@@ -486,7 +487,7 @@ public:
   std::string toYamlString();
 
 private:
-  // MutexType mutex;
+  MutexType mutex_;
 
   std::map<std::string, Logger::ptr> loggers_;
 

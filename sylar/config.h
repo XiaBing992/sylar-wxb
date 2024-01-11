@@ -2,7 +2,7 @@
  * @Author: XiaBing
  * @Date: 2023-12-27 10:01:38
  * @LastEditors: XiaBing
- * @LastEditTime: 2024-01-01 21:19:15
+ * @LastEditTime: 2024-01-11 10:59:02
  * @FilePath: /sylar-wxb/sylar/config.h
  * @Description: 
  */
@@ -28,6 +28,8 @@
 
 #include <boost/lexical_cast.hpp>
 #include <yaml-cpp/yaml.h>
+
+#include "mutex.h"
 namespace sylar{
 
 /**
@@ -319,7 +321,7 @@ template<typename T, typename FromStr = LexicalCast<std::string, T>
 class ConfigVar : public ConfigVarBase
 {
 public:
-  // typedef RWMutex RWMutexType;
+  typedef RWMutex RWMutexType;
   typedef std::shared_ptr<ConfigVar> ptr;
   typedef std::function<void (const T& old_value, const T& new_value)> on_change_cb;
 
@@ -329,7 +331,8 @@ public:
    * @param default_value 参数默认值
    * @param description 参数的描述
    */  
-  ConfigVar(const std::string& name, const T& default_value, const std::string& description = "") {}
+  ConfigVar(const std::string& name, const T& default_value, const std::string& description = "") 
+    : ConfigVarBase(name, description), val_(default_value) {}
 
   /**
    * @brief 参数值转换成YAML String 
@@ -338,15 +341,17 @@ public:
   {
     try 
     {
-      // RWMutexType::ReadLock lock(mutex_);
-      return ToStr(val_);
+      RWMutexType::ReadLock lock(mutex_);
+      return ToStr()(val_);
     } 
     catch (std::exception& e) 
     {
-      // SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "ConfigVar::toString exception "
-      //           << e.what() << " convert: " << TypeToName<T>() << " to string"
-      //           << " name=" << name_;
+      SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "ConfigVar::toString exception "
+                << e.what() << " convert: " << TypeToName<T>() << " to string"
+                << " name=" << name_;
     }
+
+    return "";
   }
 
   /**
@@ -373,14 +378,14 @@ public:
    */  
   const T getValue()
   {
-    // RWMutexType::ReadLock lock(mutex_);
+    RWMutexType::ReadLock lock(mutex_);
     return val_;
   }
 
   void setValue(const T& v)
   {
     {
-      //RWMutexType::ReadLock lock(mutex_);
+      RWMutexType::ReadLock lock(mutex_);
       if (v == val_) return;
 
       for (auto& i : cbs_)
@@ -389,11 +394,11 @@ public:
       }
     }
 
-    // RWMutexType::WriteLock lock(mutex_);
+    RWMutexType::WriteLock lock(mutex_);
     val_ = v;
   }
 
-  // std::string getTypeName() const override { return getTypeName<T>();}
+  std::string getTypeName() const override { return TypeToName<T>();}
 
   /**
    * @brief 添加变化回调函数 
@@ -402,7 +407,7 @@ public:
   uint64_t addListener(on_change_cb cb)
   {
     static uint64_t s_fun_id = 0;
-    // RWMutexType::WriteLock lock(mutex_);
+    RWMutexType::WriteLock lock(mutex_);
     ++s_fun_id;
     cbs_[s_fun_id] = cb;
     return s_fun_id;
@@ -410,7 +415,7 @@ public:
 
   void delListener(uint64_t key)
   {
-    // RWMutexType::WriteLock lock(mutex_);
+    RWMutexType::WriteLock lock(mutex_);
     cbs_.erase(key);
   }
 
@@ -419,19 +424,19 @@ public:
    */  
   on_change_cb getListener(uint64_t key)
   {
-    // RWMutexType::ReadLock lock(m_mutex);
+    RWMutexType::ReadLock lock(mutex_);
     auto it = cbs_.find(key);
     return it == cbs_.end() ? nullptr : it->second;
   }
 
   void clearListener()
   {
-    // RWMutexType::WriteLock lock(mutex_);
+    RWMutexType::WriteLock lock(mutex_);
     cbs_.clear();
   }
 
 private:
-  // RWMutexType mutex_;
+  RWMutexType mutex_;
   T val_;
 
   std::map<std::uint64_t, on_change_cb> cbs_; // 变更回调函数组
@@ -445,13 +450,22 @@ class Config
 {
 public:
   typedef std::unordered_map<std::string, ConfigVarBase::ptr> ConfigVarMap;
-  // typedef RWMutex RWMutexType;
+  typedef RWMutex RWMutexType;
 
+  /**
+   * @brief 获取/创建对应参数名的配置参数
+   * @param name 配置参数名称
+   * @param default_value 参数默认值
+   * @param description 参数描述
+   * @details 获取参数名为name的配置参数，如果存在直接返回，如果不存在，创建参数配置并用default_value赋值
+   * @return 返回对应的配置参数
+   * @exception 参数名中有非法字符， 抛出异常
+   */  
   template<typename T>
   static typename ConfigVar<T>::ptr Lookup(const std::string& name, const T& default_value
                                          , const std::string& description = "")
   {
-    // RWMutexType::WriteLock lock(GetMutex());
+    RWMutexType::WriteLock lock(GetMutex());
     auto it = GetDatas().find(name);
     if (it != GetDatas().end())
     {
@@ -459,16 +473,61 @@ public:
       if (tmp)
       {
         SYLAR_LOG_INFO(SYLAR_LOG_ROOT()) << "Lookup name=" << name << " exists";
-                return tmp;
+        return tmp;
       }
       else
       {
-
+        // SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "Lookup name=" << name << " exists but type not "
+        //   << TypeToName<T>() << " real_type=" << it->second->getTypeName() << " " << it->second->toString();
+        return nullptr;
       }
     }
+    if (name.find_first_not_of("abcdefghikjlmnopqrstuvwxyz._012345678") != std::string::npos)
+    {
+      SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "Lookup name invalid " << name;
+      throw std::invalid_argument(name);
+    }
+
+    typename ConfigVar<T>::ptr v(new ConfigVar<T>(name, default_value, description));
+    GetDatas()[name] = v;
+
+    return v;
   }
 
+  /**
+   * @brief 查找配置参数
+   * @param name 配置参数名称
+   * @return 返回配置参数名为name的配置
+   */  
+  template<typename T>
+  static typename ConfigVar<T>::ptr Lookup(const std::string& name)
+  {
+    RWMutexType::ReadLock lock(GetMutex());
+    auto it = GetDatas().find(name);
+    if (it == GetDatas().end())
+    {
+      return nullptr;
+    }
+    return std::dynamic_pointer_cast(ConfigVar<T>(it->second));
+  }
 
+  /**
+   * @brief 使用yaml初始化配置 
+   */  
+  static void LoadFromYaml(const YAML::Node& root);
+
+  /**
+   * @brief 加载path文件夹里面的配置文件 
+   */  
+  static void LoadFromConfDir(const std::string& path, bool force = false);
+
+  /**
+   * @brief 查找配置参数 
+   * @param 配置参数名称
+   */  
+  static ConfigVarBase::ptr LookupBase(const std::string& name);
+
+  static void Visit(std::function<void(ConfigVarBase::ptr)> cb);
 private:
   /**
    * @brief 返回所有配置项 
@@ -479,11 +538,11 @@ private:
     return s_datas;
   }
 
-  // static RWMutexType& GetMutex()
-  // {
-  //   static RWMutexType s_mutex;
-  //   return s_mutex;
-  // }
+  static RWMutexType& GetMutex()
+  {
+    static RWMutexType s_mutex;
+    return s_mutex;
+  }
 
   
 };
