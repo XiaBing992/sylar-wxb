@@ -2,7 +2,7 @@
  * @Author: XiaBing
  * @Date: 2023-12-22 19:24:56
  * @LastEditors: XiaBing
- * @LastEditTime: 2024-01-03 16:55:03
+ * @LastEditTime: 2024-01-17 15:24:08
  * @FilePath: /sylar-wxb/sylar/log.h
  * @Description: 
  */
@@ -67,8 +67,8 @@
 #define SYLAR_LOG_FMT_LEVEL(logger, level, fmt, ...) \
   if (logger->getLevel() <= level) \
     sylar::LogEventWrap(sylar::LogEvent::ptr(new sylar::LogEvent(logger, level, \
-      __FILE__, __LINE__, 0, sylar::getThreadId(), \
-        sylar::getFiberId(), time(0), sylar::Thread::GetName()))).getEvent->format(fmt, __VA_ATGS__)
+      __FILE__, __LINE__, 0, sylar::GetThreadId(), \
+        sylar::GetFiberId(), time(0), sylar::Thread::GetName()))).getEvent()->format(fmt, __VA_ARGS__)
 
 /**
  * @brief 使用格式化方式将日志级别debug的日志写入到logger
@@ -458,7 +458,7 @@ public:
   /**
    * @brief 重新弄打开日志文件 
    */  
-  // bool reopen();
+  bool reopen();
 
 private:
   std::string filename_;

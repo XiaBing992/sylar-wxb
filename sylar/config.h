@@ -2,7 +2,7 @@
  * @Author: XiaBing
  * @Date: 2023-12-27 10:01:38
  * @LastEditors: XiaBing
- * @LastEditTime: 2024-01-11 10:59:02
+ * @LastEditTime: 2024-01-16 15:15:44
  * @FilePath: /sylar-wxb/sylar/config.h
  * @Description: 
  */
@@ -30,6 +30,9 @@
 #include <yaml-cpp/yaml.h>
 
 #include "mutex.h"
+#include "util.h"
+#include "log.h"
+#include "config.h"
 namespace sylar{
 
 /**
@@ -365,10 +368,10 @@ public:
     }
     catch (std::exception& e)
     {
-      // SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "ConfigVar::fromString exception "
-      //           << e.what() << " convert: string to " << TypeToName<T>()
-      //           << " name=" << name_
-      //           << " - " << val;
+      SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "ConfigVar::fromString exception "
+                << e.what() << " convert: string to " << TypeToName<T>()
+                << " name=" << name_
+                << " - " << val;
     }
     return false;
   }
@@ -508,7 +511,7 @@ public:
     {
       return nullptr;
     }
-    return std::dynamic_pointer_cast(ConfigVar<T>(it->second));
+    return std::dynamic_pointer_cast<ConfigVar<T>>(it->second);
   }
 
   /**

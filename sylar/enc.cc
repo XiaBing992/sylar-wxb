@@ -2,7 +2,7 @@
  * @Author: XiaBing
  * @Date: 2024-01-03 22:48:02
  * @LastEditors: XiaBing
- * @LastEditTime: 2024-01-09 16:22:15
+ * @LastEditTime: 2024-01-11 11:44:40
  * @FilePath: /sylar-wxb/sylar/enc.cc
  * @Description: 
  */
@@ -27,7 +27,11 @@ bool Env::init(int argc, char** argv)
   char link[1024] = {0};
   char path[1024] = {0};
   sprintf(link, "proc/%d/exe", getpid());
-  readlink(link, path, sizeof(path)); // 建立符号链接
+  if (readlink(link, path, sizeof(path)) == -1)
+  {
+    SYLAR_LOG_ERROR(g_logger) << "readlink error.";
+    return false;
+  }
   exe_ = path;
 
   auto pos = exe_.find_last_of("/");

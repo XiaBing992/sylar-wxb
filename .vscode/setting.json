@@ -1,0 +1,11 @@
+{
+  "clangd.arguments": [
+    "--all-scopes-completion",
+    "--completion-style=bundled",
+    "--header-insertion=iwyu",
+    "--header-insertion-decorators",
+    "--background-index",
+    "-j=2",
+    "--compile-commands-dir=build"
+  ]
+}

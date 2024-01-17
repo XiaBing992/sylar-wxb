@@ -33,18 +33,15 @@ ELSE()
 ENDIF(WIN32)
 
 # This is for clangd plugin for vscode
-IF(DEBUG)
-    MESSAGE(STATUS "DEBUG has been set as TRUE ${DEBUG}")
-    SET(CMAKE_COMMON_FLAGS "${CMAKE_COMMON_FLAGS}  -O0 -g -DDEBUG ")
-    ADD_DEFINITIONS(-DENABLE_DEBUG)
-ELSEIF(NOT DEFINED ENV{DEBUG})
-    MESSAGE(STATUS "Disable debug")
+IF(RELEASE)
+    MESSAGE(STATUS "Enable release")
     SET(CMAKE_COMMON_FLAGS "${CMAKE_COMMON_FLAGS}  -O3 -g -fipa-pta -flto=auto")
+    ADD_DEFINITIONS(-DRELEASE_MODE)
 ELSE()
     MESSAGE(STATUS "Enable debug")
-    SET(CMAKE_COMMON_FLAGS "${CMAKE_COMMON_FLAGS}  -O0 -g -DDEBUG")
-    ADD_DEFINITIONS(-DENABLE_DEBUG)
-ENDIF(DEBUG)
+    SET(CMAKE_COMMON_FLAGS "${CMAKE_COMMON_FLAGS}  -O0 -g")
+    ADD_DEFINITIONS(-DDEBUG_MODE)
+ENDIF()
 
 MESSAGE(STATUS "CMAKE_CXX_COMPILER_ID is " ${CMAKE_CXX_COMPILER_ID})
 IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND ${STATIC_STDLIB})
@@ -82,4 +79,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 #------------------------------------ exec ----------------------------------------------
 add_library(sylar ${SRC})
 target_link_libraries(sylar pthread yaml-cpp)
-# add_subdirectory(tests)
+
+
+add_subdirectory(tests)

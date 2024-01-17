@@ -17,6 +17,7 @@
 #include "log.h"
 #include "config.h"
 #include "env.h"
+#include "util.h"
 #include "yaml-cpp/node/node.h"
 #include "yaml-cpp/node/parse.h"
 #include "yaml-cpp/yaml.h"
@@ -410,7 +411,7 @@ void Logger::fatal(LogEvent::ptr event) {
 FileLogAppender::FileLogAppender(const std::string& filename)
   : filename_(filename)
 {
-  //reopen();
+  reopen();
 }
 
 void FileLogAppender::log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event)
@@ -420,7 +421,7 @@ void FileLogAppender::log(std::shared_ptr<Logger> logger, LogLevel::Level level,
     uint64_t now = event->getTime();
     if (now >= (last_time_ + 3))
     {
-      //reopen();
+      reopen();
       last_time_ = now;
     }
     MutexType::Lock lock(mutex_);
@@ -451,15 +452,15 @@ std::string FileLogAppender::toYamlString()
   return ss.str();
 }
 
-// bool FileLogAppender::reopen()
-// {
-//   MutexType::Lock lock(mutex_);
-//   if (filestream_)
-//   {
-//     filestream_.close();
-//   }
-//   return FSUtil::OpenForWrite(m_filestream, m_filename, std::ios::app);
-// }
+bool FileLogAppender::reopen()
+{
+  MutexType::Lock lock(mutex_);
+  if (filestream_)
+  {
+    filestream_.close();
+  }
+  return FSUtil::OpenForWrite(filestream_, filename_, std::ios::app);
+}
 
 void StdoutLogAppender::log(std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) 
 {
@@ -501,9 +502,9 @@ std::string LogFormatter::format(std::shared_ptr<Logger> logger, LogLevel::Level
 }
 
 std::ostream& LogFormatter::format(std::ostream& ofs, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) {
-  for(auto& i : items_) 
+  for(auto& format_ptr : items_) 
   {
-      i->format(ofs, logger, level, event);
+    format_ptr->format(ofs, logger, level, event);
   }
   return ofs;
 }
@@ -552,14 +553,14 @@ void LogFormatter::init()
       {
         if (pattern_[n] == '{')
         {
-          str = pattern_.substr(i + 1);
+          str = pattern_.substr(i + 1, n - i - 1);
           fmt_status = 1;
           fmt_begin = n;
           n++;
           continue;
         }
       }
-      else
+      else if (fmt_status == 1)
       {
         if (pattern_[n] == '}')
         {
@@ -589,7 +590,7 @@ void LogFormatter::init()
       vec.push_back(std::make_tuple(str, fmt, 1));
       i = n - 1;
     }
-    else
+    else if (fmt_status == 1)
     {
       std::cout << "pattern parse error: " << pattern_ << " - " << pattern_.substr(i) << std::endl;
       error_ = true;
