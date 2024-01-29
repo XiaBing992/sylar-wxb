@@ -59,13 +59,22 @@ ENDIF ()
 
 # ---------------------------- include and src ------------------------------------------------
 include_directories(${CMAKE_SOURCE_DIR}/sylar)
-file(GLOB SRC "${CMAKE_SOURCE_DIR}/sylar/*.cc")
+file(GLOB SRC 
+    "${CMAKE_SOURCE_DIR}/sylar/*.cc"
+    "${CMAKE_SOURCE_DIR}/sylar/util/*.cc")
 
 
 # ------------------------------------ deps --------------------------------------------
 set(3RD ${CMAKE_SOURCE_DIR}/deps/3rd/)
-include_directories(${3RD}/yaml-cpp/include ${3RD}/boost_1_84_0/include)
-link_directories(${3RD}/yaml-cpp/lib ${3RD}/boost_1_84_0/lib)
+include_directories(${3RD}/yaml-cpp/include 
+                    ${3RD}/boost_1_84_0/include
+                    ${3RD}/jsoncpp/include
+                    ${3RD}/protobuf-3.18.3/include
+                    )
+link_directories(${3RD}/yaml-cpp/lib
+                 ${3RD}/boost_1_84_0/lib
+                ${3RD}/jsoncpp/lib
+                ${3RD}/protobuf-3.18.3/lib)
 
 # ----------------------------------- other --------------------------------------------
 set(CMAKE_CXX_FLAGS ${CMAKE_COMMON_FLAGS})
@@ -78,7 +87,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 #------------------------------------ exec ----------------------------------------------
 add_library(sylar ${SRC})
-target_link_libraries(sylar pthread yaml-cpp)
+target_link_libraries(sylar pthread yaml-cpp jsoncpp protobuf)
 
 
 add_subdirectory(tests)

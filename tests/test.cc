@@ -2,7 +2,7 @@
  * @Author: XiaBing
  * @Date: 2023-12-22 19:25:36
  * @LastEditors: XiaBing
- * @LastEditTime: 2024-01-17 17:53:37
+ * @LastEditTime: 2024-01-24 09:40:38
  * @FilePath: /sylar-wxb/tests/test.cc
  * @Description: 
  */
@@ -12,6 +12,7 @@
 
 int main()
 {
+  // 自定义logger使用方式
   sylar::Logger::ptr logger(new sylar::Logger);
 
   // 控制台输出日志
@@ -30,6 +31,7 @@ int main()
 
   SYLAR_LOG_FMT_ERROR(logger, "test macro fmt error %s", "aa");
 
+  // 通过单例使用
   auto l = sylar::LoggerMgr::GetInstance()->getLogger("xx");
   SYLAR_LOG_INFO(l) << "xxx";
 
