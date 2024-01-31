@@ -2,7 +2,15 @@
  * @Author: XiaBing
  * @Date: 2024-01-01 21:25:51
  * @LastEditors: XiaBing
- * @LastEditTime: 2024-01-02 14:29:01
+ * @LastEditTime: 2024-01-30 09:59:58
+ * @FilePath: /sylar-wxb/sylar/thread.h
+ * @Description: 
+ */
+/*
+ * @Author: XiaBing
+ * @Date: 2024-01-01 21:25:51
+ * @LastEditors: XiaBing
+ * @LastEditTime: 2024-01-30 09:59:36
  * @FilePath: /sylar-wxb/sylar/thread.h
  * @Description: 
  */
@@ -14,6 +22,7 @@
 #include <memory>
 
 #include "noncopyable.h"
+#include "mutex.h"
 
 
 namespace sylar{
@@ -51,7 +60,7 @@ private:
 
   std::string name_;
 
-  // Semaphore semaphore;
+  Semaphore semaphore_;
 
 }; 
 } // namespace sylar

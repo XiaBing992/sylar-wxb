@@ -1,8 +1,8 @@
 /*
  * @Author: XiaBing
  * @Date: 2024-01-12 10:23:09
- * @LastEditors: XiaBing
- * @LastEditTime: 2024-01-16 22:38:51
+ * @LastEditors: Xiabing
+ * @LastEditTime: 2024-01-31 22:33:38
  * @FilePath: /sylar-wxb/sylar/fiber.cc
  * @Description: 
  */
@@ -17,6 +17,7 @@
 #include "config.h"
 #include "log.h"
 #include "util.h"
+#include "scheduler.h"
 
 namespace sylar {
 
@@ -62,7 +63,7 @@ Fiber::Fiber()
   SetThis(this);
   if (getcontext(&ctx_))
   {
-    // SYLAR_ASSERT2(false, "getcontext");
+    SYLAR_ASSERT2(false, "getcontext");
   }
   s_fiber_count++;
 
@@ -78,7 +79,7 @@ Fiber::Fiber(std::function<void()> cb, size_t stacksize, bool use_caller)
   stack_ = StackAllocator::Alloc(stacksize_);
   if (getcontext(&ctx_))
   {
-    // SYLAR_ASSERT2(false, "getcontext");
+    SYLAR_ASSERT2(false, "getcontext");
   }
   ctx_.uc_link = nullptr; // 下一个要执行的上下文
   ctx_.uc_stack.ss_sp = stack_; // 堆栈起始指针
@@ -101,15 +102,15 @@ Fiber::~Fiber()
   s_fiber_count--;
   if (stack_)
   {
-    // SYLAR_ASSERT(m_state == TERM
-    //             || m_state == EXCEPT
-    //             || m_state == INIT);
+    SYLAR_ASSERT(state_ == TERM
+                || state_ == EXCEPT
+                || state_ == INIT);
     StackAllocator::Dealloc(stack_, stacksize_);
   }
   else
   {
-    // SYLAR_ASSERT(!m_cb);
-    // SYLAR_ASSERT(m_state == EXEC);
+    SYLAR_ASSERT(!cb_);
+    SYLAR_ASSERT(state_ == EXEC);
     Fiber* cur = t_fiber;
     if (cur == this)
     {
@@ -121,10 +122,10 @@ Fiber::~Fiber()
 
 void Fiber::reset(std::function<void()> cb)
 {
-  // SYLAR_ASSERT(m_stack);
-  // SYLAR_ASSERT(m_state == TERM
-  //         || m_state == EXCEPT
-  //         || m_state == INIT);
+  SYLAR_ASSERT(stack_);
+  SYLAR_ASSERT(state_ == TERM
+          || state_ == EXCEPT
+          || state_ == INIT);
   ctx_.uc_link = nullptr;
   ctx_.uc_stack.ss_sp = stack_;
   ctx_.uc_stack.ss_size = stacksize_;
@@ -138,7 +139,7 @@ void Fiber::call()
   SetThis(this);
   if (swapcontext(&t_threadFiber->ctx_, &ctx_))
   {
-    // SYLAR_ASSERT2(false, "swapcontext");
+    SYLAR_ASSERT2(false, "swapcontext");
   }
 }
 
@@ -147,28 +148,28 @@ void Fiber::back()
   SetThis(t_threadFiber.get());
   if (swapcontext(&ctx_, &t_threadFiber->ctx_))
   {
-    // SYLAR_ASSERT2(false, "swapcontext");
+    SYLAR_ASSERT2(false, "swapcontext");
   }
 }
 
 void Fiber::swapIn()
 {
   SetThis(this);
-  // SYLAR_ASSERT(m_state != EXEC);
+  SYLAR_ASSERT(state_ != EXEC);
   state_ = EXEC;
-  // if (swapcontext(&Scheduler::GetMainFiber()->ctx_, &ctx_))
-  // {
-  //   SYLAR_ASSERT2(false, "swapcontext");
-  // }
+  if (swapcontext(&Scheduler::GetMainFiber()->ctx_, &ctx_))
+  {
+    SYLAR_ASSERT2(false, "swapcontext");
+  }
 }
 
 void Fiber::swapOut()
 {
-  // SetThis(Scheduler::GetMainFiber());
-  // if(swapcontext(&m_ctx, &Scheduler::GetMainFiber()->m_ctx)) 
-  // {
-  //   SYLAR_ASSERT2(false, "swapcontext");
-  // }
+  SetThis(Scheduler::GetMainFiber());
+  if(swapcontext(&ctx_, &Scheduler::GetMainFiber()->ctx_)) 
+  {
+    SYLAR_ASSERT2(false, "swapcontext");
+  }
 }
 
 void Fiber::SetThis(Fiber* f)
@@ -181,7 +182,7 @@ Fiber::ptr Fiber::GetThis()
   if (t_fiber) return t_fiber->shared_from_this();
 
   Fiber::ptr main_fiber(new Fiber);
-  // SYLAR_ASSERT(t_fiber == main_fiber.get());
+  SYLAR_ASSERT(t_fiber == main_fiber.get()); // 这里？？？
   t_threadFiber = main_fiber;
   return t_fiber->shared_from_this();
 }
@@ -189,17 +190,16 @@ Fiber::ptr Fiber::GetThis()
 void Fiber::YieldToReady()
 {
   Fiber::ptr cur = GetThis();
-  // SYLAR_ASSERT(cur->m_state == EXEC);
+  SYLAR_ASSERT(cur->state_ == EXEC);
   cur->state_ = READY;
   cur->swapOut(); 
 }
 
 void Fiber::YieldToHold() 
 {
-  // Fiber::ptr cur = GetThis();
-  // SYLAR_ASSERT(cur->m_state == EXEC);
-  // //cur->m_state = HOLD;
-  // cur->swapOut();
+  Fiber::ptr cur = GetThis();
+  SYLAR_ASSERT(cur->state_ == EXEC);
+  cur->swapOut();
 }
 
 uint64_t Fiber::TotalFibers()
@@ -210,7 +210,7 @@ uint64_t Fiber::TotalFibers()
 void Fiber::MainFunc()
 {
   Fiber::ptr cur = GetThis();
-  // SYLAR_ASSERT(cur);
+  SYLAR_ASSERT(cur);
   try {
     cur->cb_();
     cur->cb_ = nullptr;
@@ -228,12 +228,12 @@ void Fiber::MainFunc()
   cur.reset();
   raw_ptr->swapOut();
 
-  // SYLAR_ASSERT2(false, "never reach fiber_id=" + std::to_string(raw_ptr->getId()));
+  SYLAR_ASSERT2(false, "never reach fiber_id=" + std::to_string(raw_ptr->getId()));
 }
 void Fiber::CallerMainFunc()
 {
   Fiber::ptr cur = GetThis();
-  // SYLAR_ASSERT(cur);
+  SYLAR_ASSERT(cur);
   try {
     cur->cb_();
     cur->cb_ = nullptr;
@@ -251,7 +251,7 @@ void Fiber::CallerMainFunc()
   auto raw_ptr = cur.get();
   cur.reset();
   raw_ptr->back();
-  // SYLAR_ASSERT2(false, "never reach fiber_id=" + std::to_string(raw_ptr->getId()));
+  SYLAR_ASSERT2(false, "never reach fiber_id=" + std::to_string(raw_ptr->getId()));
 }
 
 }

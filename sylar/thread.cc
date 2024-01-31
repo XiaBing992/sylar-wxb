@@ -1,3 +1,11 @@
+/*
+ * @Author: Xiabing
+ * @Date: 2024-01-01 21:25:56
+ * @LastEditors: Xiabing
+ * @LastEditTime: 2024-01-30 21:06:53
+ * @FilePath: /sylar-wxb/sylar/thread.cc
+ * @Description: 
+ */
 #include <functional>
 #include <iterator>
 #include <pthread.h>
@@ -50,7 +58,7 @@ Thread::Thread(std::function<void()> cb, const std::string& name)
     SYLAR_LOG_ERROR(g_logger) << "pthread_create thread fail, rt=" << rt << " name=" << name;
     throw std::logic_error("pthread_create error");
   }
-  // semaphore.wait();
+  semaphore_.wait(); // 等待运行
 }
 
 Thread::~Thread()
@@ -85,7 +93,7 @@ void* Thread::run(void* arg)
 
   std::function<void()> cb;
   cb.swap(thread->cb_);
-  // thread->semaphore_.notify(); //为什么这里要去唤醒？？？
+  thread->semaphore_.notify();
 
   cb();
 
