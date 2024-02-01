@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 
+#include "log.h"
 #include "mutex.h"
 #include "scheduler.h"
 #include "macro.h"
@@ -17,7 +18,7 @@ namespace sylar {
 static sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
 
 static thread_local Scheduler* t_scheduler = nullptr;
-static thread_local Fiber* t_scheduler_fiber = nullptr; // 主协程函数
+static thread_local Fiber* t_scheduler_fiber = nullptr; //当前线程的主函数
 
 Scheduler::Scheduler(size_t threads, bool use_caller, const std::string& name)
   : name_(name)
@@ -138,7 +139,7 @@ void Scheduler::setThis()
 
 void Scheduler::run()
 {
-  SYLAR_LOG_DEBUG(g_logger) << name_ << "run";
+  SYLAR_LOG_DEBUG(g_logger) << name_ << " run";
   set_hook_enable(true);
   setThis();
   if (sylar::GetThreadId() != rootThread_) // 当前线程不是主线程
@@ -160,7 +161,7 @@ void Scheduler::run()
       auto it = fibers_.begin();
       while (it != fibers_.end())
       {
-        if (it->thread_ != -1 && it->thread_ != sylar::GetThreadId()) // 非当前线程
+        if (it->thread_ != -1 && it->thread_ != sylar::GetThreadId()) // 当前协程不是在本线程上执行
         {
           it++;
           tickle_me = true;
@@ -236,7 +237,7 @@ void Scheduler::run()
       }
 
       idleThreadCount_++;
-      idle_fiber->swapIn();
+      idle_fiber->swapIn(); // 运行idle协程
       idleThreadCount_--;
       if (idle_fiber->getState() != Fiber::TERM && idle_fiber->getState() != Fiber::EXCEPT)
       {
@@ -263,6 +264,7 @@ void Scheduler::idle()
   {
     sylar::Fiber::YieldToHold();
   }
+  SYLAR_LOG_INFO(g_logger) << "idle end";
 }
 
 void Scheduler::switchTo(int thread)

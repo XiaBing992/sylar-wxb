@@ -103,7 +103,7 @@ public:
   static void SetThis(Fiber* f);
 
   /**
-   * @brief 返回当前所在的协程 
+   * @brief 返回当前所在的线程的协程
    */  
   static Fiber::ptr GetThis();
 

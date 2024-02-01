@@ -2,7 +2,7 @@
  * @Author: Xiabing
  * @Date: 2024-01-31 21:38:54
  * @LastEditors: Xiabing
- * @LastEditTime: 2024-01-31 21:44:07
+ * @LastEditTime: 2024-02-01 20:40:32
  * @FilePath: /sylar-wxb/tests/test_scheduler.cc
  * @Description: 
  */
@@ -28,12 +28,12 @@ void test_fiber()
 int main()
 {
   SYLAR_LOG_INFO(g_logger) << "main";
-  sylar::Scheduler sc(3, false, "test");
+  sylar::Scheduler sc(1, false, "test");
   sc.start();
-  sleep(2);
+  sleep(7);
   SYLAR_LOG_INFO(g_logger) << "schedule";
-  sc.schedule(&test_fiber);
-  sc.stop();
+  sc.schedule(&test_fiber); // 此函数在任意线程上执行
+  sc.stop(); 
   SYLAR_LOG_INFO(g_logger) << "over";
   return 0;
 }

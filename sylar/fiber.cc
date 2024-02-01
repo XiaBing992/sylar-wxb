@@ -2,7 +2,7 @@
  * @Author: XiaBing
  * @Date: 2024-01-12 10:23:09
  * @LastEditors: Xiabing
- * @LastEditTime: 2024-01-31 22:33:38
+ * @LastEditTime: 2024-02-01 19:37:57
  * @FilePath: /sylar-wxb/sylar/fiber.cc
  * @Description: 
  */
@@ -157,19 +157,23 @@ void Fiber::swapIn()
   SetThis(this);
   SYLAR_ASSERT(state_ != EXEC);
   state_ = EXEC;
-  if (swapcontext(&Scheduler::GetMainFiber()->ctx_, &ctx_))
+  SYLAR_LOG_DEBUG(g_logger) << "swapin start";
+  if (swapcontext(&Scheduler::GetMainFiber()->ctx_, &ctx_)) // 让当前线程执行的协程暂停，转而执行this的栈空间
   {
     SYLAR_ASSERT2(false, "swapcontext");
   }
+  SYLAR_LOG_DEBUG(g_logger) << "swapin end";
 }
 
 void Fiber::swapOut()
 {
   SetThis(Scheduler::GetMainFiber());
-  if(swapcontext(&ctx_, &Scheduler::GetMainFiber()->ctx_)) 
+  SYLAR_LOG_DEBUG(g_logger) << "swapout start";
+  if(swapcontext(&ctx_, &Scheduler::GetMainFiber()->ctx_)) // 执行主协程的栈空间
   {
     SYLAR_ASSERT2(false, "swapcontext");
   }
+  SYLAR_LOG_DEBUG(g_logger) << "swapout end";
 }
 
 void Fiber::SetThis(Fiber* f)

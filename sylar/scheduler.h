@@ -2,7 +2,7 @@
  * @Author: XiaBing
  * @Date: 2024-01-29 20:16:38
  * @LastEditors: Xiabing
- * @LastEditTime: 2024-01-31 22:12:28
+ * @LastEditTime: 2024-02-01 15:55:41
  * @FilePath: /sylar-wxb/sylar/scheduler.h
  * @Description: 
  */
@@ -57,7 +57,7 @@ public:
   void stop();
 
   /**
-   * @brief 调度协程
+   * @brief 将协程放入队列
    * @param fc 协程或函数
    * @param thread 协程执行的线程id，-1标识任意线程  
    */  
