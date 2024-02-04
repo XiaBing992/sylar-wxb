@@ -6,31 +6,37 @@
  * @FilePath: /sylar-wxb/tests/test_scheduler.cc
  * @Description: 
  */
+#include <atomic>
+
 #include "log.h"
 #include "mutex.h"
 #include "scheduler.h"
+#include "thread.h"
 #include "util.h"
 
 static sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT();
 
 void test_fiber()
 {
-  static int s_count = 5;
-  SYLAR_LOG_INFO(g_logger) << "test in fiber s_count =" << s_count;
+  static std::atomic<int> s_count = {5};
+  SYLAR_LOG_INFO(g_logger) << "test in fiber s_count = " << s_count;
 
-  sleep(1);
+  sleep(2);
   if (--s_count >= 0)
   {
+    SYLAR_LOG_DEBUG(g_logger) << "s_count--";
     sylar::Scheduler::GetThis()->schedule(&test_fiber, sylar::GetThreadId());
   }
+  SYLAR_LOG_INFO(g_logger) << "end test fiber";
 }
 
 int main()
 {
+  sylar::Thread::SetName("main");
   SYLAR_LOG_INFO(g_logger) << "main";
   sylar::Scheduler sc(1, false, "test");
   sc.start();
-  sleep(7);
+  sleep(2);
   SYLAR_LOG_INFO(g_logger) << "schedule";
   sc.schedule(&test_fiber); // 此函数在任意线程上执行
   sc.stop(); 

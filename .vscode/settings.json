@@ -1,5 +1,6 @@
 {
   "files.associations": {
+    "*.py": "python",
     "cctype": "cpp",
     "clocale": "cpp",
     "cmath": "cpp",
@@ -73,7 +74,19 @@
     "valarray": "cpp",
     "variant": "cpp",
     "bit": "cpp",
-    "__nullptr": "cpp"
+    "__nullptr": "cpp",
+    "csetjmp": "cpp",
+    "*.ipp": "cpp",
+    "compare": "cpp",
+    "concepts": "cpp",
+    "coroutine": "cpp",
+    "forward_list": "cpp",
+    "regex": "cpp",
+    "numbers": "cpp",
+    "ranges": "cpp",
+    "scoped_allocator": "cpp",
+    "semaphore": "cpp",
+    "stop_token": "cpp"
   },
 
   "clangd.arguments": [
@@ -84,5 +97,6 @@
     "--background-index",
     "-j=2",
     "--compile-commands-dir=build"
-  ]
+  ],
+  "C_Cpp.default.compilerPath": "/usr/bin/gcc"
 }

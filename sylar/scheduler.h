@@ -136,6 +136,8 @@ bool scheduleNoLock(FiberOrCb fc, int thread)
 {
   bool need_tickle = fibers_.empty(); // 之前没任务，需要重新唤醒
   FiberAndThread ft(fc, thread);
+  static sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+  SYLAR_LOG_DEBUG(g_logger) << "schedule no lock";
 
   if (ft.fiber_ || ft.cb_) fibers_.push_back(ft); // 将要执行的任务放进去
 

@@ -2,9 +2,11 @@
 #include "log.h"
 #include "config.h"
 
-sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+
 
 namespace sylar {
+
+sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
 
 static sylar::ConfigVar<int>::ptr g_tcp_connect_timeout =
   sylar::Config::Lookup("tcp.connect.timeout", 5000, "tcp connect timeout");

@@ -21,6 +21,14 @@
 
 # 协程调度模块
 - 线程池去运行调度器的run函数（执行调度器的逻辑）
+- 线程池上跑多个协程，每个协程可以指定由哪个线程执行
+
+## 协程
+- 每个协程5个状态：INIT(初始化) HOLD(swapin) EXEC(swapin) TERM（执行完毕） EXCEPT(异常)
 
 ## API
-- swapcontex(&ctx1, &ctx2)：切换上下文，执行ctx2空间的逻辑
+```
+getcontext：保护现场，保存相关寄存器信息、栈信息
+makecontext: 执行栈准备工作
+swapcontext：执行上下文切换
+```

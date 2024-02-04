@@ -126,6 +126,7 @@ void Fiber::reset(std::function<void()> cb)
   SYLAR_ASSERT(state_ == TERM
           || state_ == EXCEPT
           || state_ == INIT);
+  cb_ = cb;
   ctx_.uc_link = nullptr;
   ctx_.uc_stack.ss_sp = stack_;
   ctx_.uc_stack.ss_size = stacksize_;
@@ -136,6 +137,7 @@ void Fiber::reset(std::function<void()> cb)
 
 void Fiber::call()
 {
+  SYLAR_LOG_INFO(g_logger) << "call";
   SetThis(this);
   if (swapcontext(&t_threadFiber->ctx_, &ctx_))
   {
@@ -157,23 +159,19 @@ void Fiber::swapIn()
   SetThis(this);
   SYLAR_ASSERT(state_ != EXEC);
   state_ = EXEC;
-  SYLAR_LOG_DEBUG(g_logger) << "swapin start";
   if (swapcontext(&Scheduler::GetMainFiber()->ctx_, &ctx_)) // 让当前线程执行的协程暂停，转而执行this的栈空间
   {
     SYLAR_ASSERT2(false, "swapcontext");
   }
-  SYLAR_LOG_DEBUG(g_logger) << "swapin end";
 }
 
 void Fiber::swapOut()
 {
   SetThis(Scheduler::GetMainFiber());
-  SYLAR_LOG_DEBUG(g_logger) << "swapout start";
-  if(swapcontext(&ctx_, &Scheduler::GetMainFiber()->ctx_)) // 执行主协程的栈空间
+  if(swapcontext(&ctx_, &Scheduler::GetMainFiber()->ctx_)) // 将当前上下文变为空
   {
     SYLAR_ASSERT2(false, "swapcontext");
   }
-  SYLAR_LOG_DEBUG(g_logger) << "swapout end";
 }
 
 void Fiber::SetThis(Fiber* f)
