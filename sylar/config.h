@@ -480,8 +480,8 @@ public:
       }
       else
       {
-        // SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "Lookup name=" << name << " exists but type not "
-        //   << TypeToName<T>() << " real_type=" << it->second->getTypeName() << " " << it->second->toString();
+        SYLAR_LOG_ERROR(SYLAR_LOG_ROOT()) << "Lookup name=" << name << " exists but type not "
+          << TypeToName<T>() << " real_type=" << it->second->getTypeName() << " " << it->second->toString();
         return nullptr;
       }
     }

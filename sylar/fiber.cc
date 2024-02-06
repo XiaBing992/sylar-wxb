@@ -18,6 +18,7 @@
 #include "log.h"
 #include "util.h"
 #include "scheduler.h"
+#include "macro.h"
 
 namespace sylar {
 

@@ -1,8 +1,8 @@
 /*
  * @Author: XiaBing
  * @Date: 2024-01-03 09:16:02
- * @LastEditors: XiaBing
- * @LastEditTime: 2024-01-03 10:40:06
+ * @LastEditors: WXB 1763567512@qq.com
+ * @LastEditTime: 2024-02-05 20:13:15
  * @FilePath: /sylar-wxb/sylar/mutex.h
  * @Description: 
  */
@@ -17,6 +17,7 @@
 #include <list>
 
 #include "noncopyable.h"
+#include "fiber.h"
 
 namespace sylar {
 
@@ -355,24 +356,24 @@ private:
 };
 
 class Scheduler;
-// class FiberSemaphore : Noncopyable
-// {
-// public:
-//   typedef Spinlock MutexType;
+class FiberSemaphore : Noncopyable
+{
+public:
+  typedef Spinlock MutexType;
 
-//   FiberSemaphore(size_t initial_concurrency = 0);
-//   ~FiberSemaphore();
-//   bool tryWait();
-//   void wait();
-//   void notify();
+  FiberSemaphore(size_t initial_concurrency = 0);
+  ~FiberSemaphore();
+  bool tryWait();
+  void wait();
+  void notify();
 
-//   size_t getConcurrency() const { return concurrency_;}
-//   void reset() { concurrency_ = 0;}
-// private:
-//   MutexType mutex_;
-//   std::list<std::pair<Scheduler*, Fiber::ptr>> waiters_;
-//   size_t concurrency_;
-// }
+  size_t getConcurrency() const { return concurrency_;}
+  void reset() { concurrency_ = 0;}
+private:
+  MutexType mutex_;
+  std::list<std::pair<Scheduler*, Fiber::ptr>> waiters_;
+  size_t concurrency_;
+};
 
 
 

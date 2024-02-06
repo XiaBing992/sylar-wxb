@@ -1,8 +1,8 @@
 /*
  * @Author: XiaBing
  * @Date: 2024-01-12 10:21:51
- * @LastEditors: Xiabing
- * @LastEditTime: 2024-01-31 21:35:31
+ * @LastEditors: WXB 1763567512@qq.com
+ * @LastEditTime: 2024-02-05 20:13:03
  * @FilePath: /sylar-wxb/sylar/fiber.h
  * @Description: 
  */
@@ -13,7 +13,6 @@
 #include <functional>
 #include <memory>
 
-#include "macro.h"
 
 namespace sylar {
 
