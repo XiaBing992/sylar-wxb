@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
 set(CMAKE_CXX_STANDARD 17)
 
-project(modelslice C CXX)
+project(sylar_wxb CXX)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 
 MESSAGE(STATUS "This is Project source dir " ${PROJECT_SOURCE_DIR})
 MESSAGE(STATUS "This is PROJECT_BINARY_DIR dir " ${PROJECT_BINARY_DIR})
@@ -55,13 +58,13 @@ ENDIF ()
 IF (EXISTS /usr/local/lib64)
     LINK_DIRECTORIES (/usr/local/lib64)
 ENDIF ()
-    INCLUDE_DIRECTORIES(/usr/local/include ${CMAKE_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(/usr/local/include ${CMAKE_SOURCE_DIR}/include)
 
 # ---------------------------- include and src ------------------------------------------------
 include_directories(${CMAKE_SOURCE_DIR}/sylar)
 file(GLOB SRC 
-    "${CMAKE_SOURCE_DIR}/sylar/*.cc"
-    "${CMAKE_SOURCE_DIR}/sylar/util/*.cc")
+    "${CMAKE_SOURCE_DIR}/sylar/*.cpp"
+    "${CMAKE_SOURCE_DIR}/sylar/util/*.cpp")
 
 
 # ------------------------------------ deps --------------------------------------------
@@ -83,8 +86,6 @@ message(STATUS "CMAKE_CXX_FLAGS is" ${CMAKE_CXX_FLAGS})
 
 # 源代码相关宏
 add_definitions(-DPROJECT_DIR="${CMAKE_SOURCE_DIR}/")
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 #------------------------------------ exec ----------------------------------------------
 add_library(sylar ${SRC})

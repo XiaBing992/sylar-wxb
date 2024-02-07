@@ -1,9 +1,9 @@
 /*
  * @Author: XiaBing
  * @Date: 2024-01-02 14:45:51
- * @LastEditors: XiaBing
- * @LastEditTime: 2024-01-29 15:03:28
- * @FilePath: /sylar-wxb/sylar/util.cc
+ * @LastEditors: WXB 1763567512@qq.com
+ * @LastEditTime: 2024-02-07 17:55:04
+ * @FilePath: /sylar-wxb/sylar/util.cpp
  * @Description: 
  */
 
@@ -101,7 +101,7 @@ std::string BacktraceToString(int size, int skip, const std::string& prefix)
   return ss.str();
 }
 
-uint64_t GetCurrentMs()
+uint64_t GetCurrentMS()
 {
   struct timeval tv;
   gettimeofday(&tv, NULL);
@@ -898,7 +898,7 @@ SpeedLimit::SpeedLimit(uint32_t speed)
 
 void SpeedLimit::add(uint32_t v)
 {
-  uint64_t curms = sylar::GetCurrentMs();
+  uint64_t curms = sylar::GetCurrentMS();
   if (curms / 1000 != curSec_)
   {
     curSec_ = curms / 1000;

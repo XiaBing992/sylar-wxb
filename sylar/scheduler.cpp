@@ -148,7 +148,7 @@ void Scheduler::run()
   }
 
   Fiber::ptr idle_fiber(new Fiber(std::bind(&Scheduler::idle, this))); // 用于其他没有执行的空闲任务
-  Fiber::ptr cb_fiber;
+  Fiber::ptr cb_fiber; //用于将回调函数情况
 
   FiberAndThread ft;
   while (true)

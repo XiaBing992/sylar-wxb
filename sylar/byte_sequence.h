@@ -2,19 +2,18 @@
  * @Author: Xiabing
  * @Date: 2024-02-05 18:23:31
  * @LastEditors: WXB 1763567512@qq.com
- * @LastEditTime: 2024-02-05 20:14:42
- * @FilePath: /sylar-wxb/sylar/endian.h
+ * @LastEditTime: 2024-02-06 20:49:48
+ * @FilePath: /sylar-wxb/sylar/byte_sequence.h
  * @Description: 
  * 
  * Copyright (c) 2024 by Xiabing, All Rights Reserved. 
  */
-#ifndef ENDIAN_H
-#define ENDIAN_H
+#ifndef BYTE_SEQUENCE_H
+#define BYTE_SEQUENCE_H
 
-#include <cstdint>
 #include <byteswap.h>
 #include <stdint.h>
-#include <type_traits>
+// #include <type_traits>
 
 #define SYLAR_LITTLE_ENDIAN 1
 #define SYLAR_BIG_ENDIAN 2
@@ -26,7 +25,7 @@ namespace sylar {
 /**
  * @brief 8字节类型 
  */
-template<typename T>
+template<class T>
 typename std::enable_if<sizeof(T) == sizeof(uint64_t), T>::type
 byteswap(T value)
 {
@@ -55,6 +54,8 @@ byteswap(T value)
 
 #if BYTE_ORDER == BIG_ENDIAN // 大端序
   #define SYLAR_BYTE_ORDER SYLAR_BIG_ENDIAN
+#else
+  #define SYLAR_BYTE_ORDER SYLAR_LITTLE_ENDIAN
 #endif
 
 #if SYLAR_BYTE_ORDER == SYLAR_BIG_ENDIAN
@@ -71,6 +72,23 @@ T byteswapOnBigEndian(T t)
   return byteswap(t);
 }
 
+#else
+
+/**
+ * @brief 只在小端机器上执行byteswap, 在大端机器上什么都不做
+ */
+template<class T>
+T byteswapOnLittleEndian(T t) {
+    return byteswap(t);
+}
+
+/**
+ * @brief 只在大端机器上执行byteswap, 在小端机器上什么都不做
+ */
+template<class T>
+T byteswapOnBigEndian(T t) {
+    return t;
+}
 #endif
 
 

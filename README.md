@@ -22,6 +22,7 @@
 # 协程调度模块
 - 线程池去运行调度器的run函数（执行调度器的逻辑）
 - 线程池上跑多个协程，每个协程可以指定由哪个线程执行
+- 空闲时运行idle函数，随时准备切换上下文。相应模块自己设定合适的idle函数
 
 ## 协程
 - 每个协程5个状态：INIT(初始化) HOLD(swapin) EXEC(swapin) TERM（执行完毕） EXCEPT(异常)
@@ -33,6 +34,21 @@ makecontext: 执行栈准备工作
 swapcontext：执行上下文切换
 ```
 
+# 定时器
+- 定时回调函数的执行时间或者执行周期
+
+## tips
+- 会有一个函数检查存储时间的变量是否溢出
+
+# IO协程调度器
+- 继承了Scheduler，Timemanager
+- 重写了idle函数，用epoll_wait等待事件响应
+- 事件响应后，处理相应读写事件，之后swapout
+- 支持设置定时任务，定时任务的触发事件会影响epoll_wait的超时时间
+- 支持管道io和socket io
+
+## tips
+- epoll_data_t中的ptr可以与自定义的句柄关联起来，而fd只能用于关联文件描述符
 
 # Problem
 - 协程的底层原理

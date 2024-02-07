@@ -1,8 +1,8 @@
 /*
  * @Author: XiaBing
  * @Date: 2024-01-02 14:45:44
- * @LastEditors: XiaBing
- * @LastEditTime: 2024-01-29 15:00:59
+ * @LastEditors: WXB 1763567512@qq.com
+ * @LastEditTime: 2024-02-07 17:54:25
  * @FilePath: /sylar-wxb/sylar/util.h
  * @Description: 
  */
@@ -41,6 +41,13 @@ void Backtrace(std::vector<std::string>& bt, int size = 64, int skip = 1);
  * @param prefix 栈信息输出的内容 
  */
 std::string BacktraceToString(int size = 64, int skip = 2, const std::string& prefix = "");
+
+/**
+ * @brief 获取当前时间的毫秒
+ */
+uint64_t GetCurrentMS();
+
+uint64_t GetCurrentUS();
 
 
 class FSUtil 

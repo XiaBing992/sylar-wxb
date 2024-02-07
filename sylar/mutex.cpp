@@ -1,14 +1,13 @@
 /*
  * @Author: XiaBing
  * @Date: 2024-01-03 22:21:54
- * @LastEditors: XiaBing
- * @LastEditTime: 2024-01-03 22:23:06
+ * @LastEditors: WXB 1763567512@qq.com
+ * @LastEditTime: 2024-02-06 20:40:34
  * @FilePath: /sylar-wxb/sylar/mutex.cpp
  * @Description: 
  */
 #include "mutex.h"
 #include <bits/stdint-uintn.h>
-#include <semaphore.h>
 #include <stdexcept>
 namespace sylar {
 
