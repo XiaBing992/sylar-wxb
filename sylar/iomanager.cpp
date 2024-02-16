@@ -2,7 +2,7 @@
  * @Author: Xiabing
  * @Date: 2024-02-07 11:22:47
  * @LastEditors: WXB 1763567512@qq.com
- * @LastEditTime: 2024-02-07 21:39:18
+ * @LastEditTime: 2024-02-08 13:43:21
  * @FilePath: /sylar-wxb/sylar/iomanager.cpp
  * @Description: 
  * 
@@ -197,7 +197,8 @@ int IOManager::addEvent(int fd, Event event, std::function<void()> cb)
   epevent.data.ptr = fd_ctx;
 
   int rt = epoll_ctl(epfd_, op, fd, &epevent);
-  if(rt) {
+  if(rt)
+  {
     SYLAR_LOG_ERROR(g_logger) << "epoll_ctl(" << epfd_ << ", " << (EpollCtlOp)op << ", " << fd << ", " << (EPOLL_EVENTS)epevent.events << "):"
         << rt << " (" << errno << ") (" << strerror(errno) << ") fd_ctx->events=" << (EPOLL_EVENTS)fd_ctx->events;
     return -1;

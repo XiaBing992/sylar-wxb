@@ -1,8 +1,8 @@
 /*
  * @Author: XiaBing
  * @Date: 2024-01-01 21:25:51
- * @LastEditors: XiaBing
- * @LastEditTime: 2024-01-30 09:59:58
+ * @LastEditors: WXB 1763567512@qq.com
+ * @LastEditTime: 2024-02-07 22:34:55
  * @FilePath: /sylar-wxb/sylar/thread.h
  * @Description: 
  */
@@ -20,6 +20,7 @@
 #include <ctime>
 #include <functional>
 #include <memory>
+#include <string>
 
 #include "noncopyable.h"
 #include "mutex.h"

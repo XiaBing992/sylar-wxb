@@ -50,7 +50,11 @@ swapcontext：执行上下文切换
 ## tips
 - epoll_data_t中的ptr可以与自定义的句柄关联起来，而fd只能用于关联文件描述符
 
+# socket模块
+
 # Problem
 - 协程的底层原理
 - log配置是怎么通过yaml传过去的
 - 为什么要用extern c
+- dlsym
+- 成员函数指针
