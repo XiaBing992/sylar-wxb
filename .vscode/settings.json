@@ -104,7 +104,7 @@
     "Author": "Xiabing", // 同时获取用户名与邮箱
     "Date": "Do not edit", // 文件创建时间(不变)
     // LastEditors、LastEditTime、FilePath将会自动更新 如果觉得时间更新的太频繁可以使用throttleTime(默认为1分钟)配置更改更新时间。
-    "LastEditors": "git config user.name && git config user.email", // 文件最后编辑者 与Author字段一致
+    "LastEditors": "Xiabing", // 文件最后编辑者 与Author字段一致
     // 由于编辑文件就会变更最后编辑时间，多人协作中合并的时候会导致merge
     // 可以将时间颗粒度改为周、或者月，这样冲突就减少很多。搜索变更时间格式: dateFormat
     "LastEditTime": "Do not edit", // 文件最后编辑时间

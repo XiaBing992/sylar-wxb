@@ -1,3 +1,13 @@
+<!--
+ * @Author: Xiabing
+ * @Date: 2024-02-18 22:03:29
+ * @LastEditors: Xiabing
+ * @LastEditTime: 2024-02-19 16:54:13
+ * @FilePath: /sylar-wxb/README.md
+ * @Description: 
+ * 
+ * Copyright (c) 2024 by Xiabing, All Rights Reserved. 
+-->
 # sylar-wxb
 - 高性能服务器框架
 - 感谢来源：https://github.com/sylar-yin/sylar
@@ -45,7 +55,12 @@ swapcontext：执行上下文切换
 - 重写了idle函数，用epoll_wait等待事件响应
 - 事件响应后，处理相应读写事件，之后swapout
 - 支持设置定时任务，定时任务的触发事件会影响epoll_wait的超时时间
-- 支持管道io和socket io
+- 支持管道io(好像是用于唤醒)和socket io
+- 当有定时器插入时，并且是头部，就调用函数写管道，唤醒
+
+
+# socket
+- connect_with_timeout实现：套接字是非阻塞的，connect可能在最开始没有连接成功，在后面继续监听写事件，获取连接信息，当达到定时器指定的timeout后，取消监听写事件
 
 ## tips
 - epoll_data_t中的ptr可以与自定义的句柄关联起来，而fd只能用于关联文件描述符
@@ -58,3 +73,4 @@ swapcontext：执行上下文切换
 - 为什么要用extern c
 - dlsym
 - 成员函数指针
+- 匿名命名空间

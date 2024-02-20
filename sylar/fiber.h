@@ -84,7 +84,7 @@ public:
   void call();
 
   /**
-   * @brief 将当前线程切换到后台
+   * @brief 将当前线程切换到后台，这个函数是use_caller的线程使用的，换回来
    * @pre 执行的为该协程
    * @post 返回到线程的主协程 
    */  

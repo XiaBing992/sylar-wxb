@@ -410,7 +410,7 @@ void IOManager::idle()
     for(int i = 0; i < rt; ++i)
     {
       epoll_event& event = events[i];
-      if(event.data.fd == tickleFds_[0])
+      if(event.data.fd == tickleFds_[0]) // 用于唤醒的管道描述符
       {
         uint8_t dummy[256];
         while(read(tickleFds_[0], dummy, sizeof(dummy)) > 0);

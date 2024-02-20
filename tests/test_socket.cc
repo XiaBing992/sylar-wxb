@@ -1,3 +1,13 @@
+/*
+ * @Author: Xiabing
+ * @Date: 2024-02-18 22:03:29
+ * @LastEditors: Xiabing
+ * @LastEditTime: 2024-02-18 22:25:51
+ * @FilePath: /sylar-wxb/tests/test_socket.cc
+ * @Description: 
+ * 
+ * Copyright (c) 2024 by Xiabing, All Rights Reserved. 
+ */
 #include "log.h"
 #include "iomanager.h"
 #include "address.h"
@@ -21,16 +31,16 @@ void test2()
 
   sylar::Socket::ptr sock = sylar::Socket::CreateTCP(addr);
   if(!sock->connect(addr)) {
-      SYLAR_LOG_ERROR(g_looger) << "connect " << addr->toString() << " fail";
+      SYLAR_LOG_ERROR(g_logger) << "connect " << addr->toString() << " fail";
       return;
   } else {
-      SYLAR_LOG_INFO(g_looger) << "connect " << addr->toString() << " connected";
+      SYLAR_LOG_INFO(g_logger) << "connect " << addr->toString() << " connected";
   }
 
   uint64_t ts = sylar::GetCurrentUS();
   for(size_t i = 0; i < 10000000000ul; ++i) {
       if(int err = sock->getError()) {
-          SYLAR_LOG_INFO(g_looger) << "err=" << err << " errstr=" << strerror(err);
+          SYLAR_LOG_INFO(g_logger) << "err=" << err << " errstr=" << strerror(err);
           break;
       }
 
@@ -47,7 +57,7 @@ void test2()
       static int batch = 10000000;
       if(i && (i % batch) == 0) {
           uint64_t ts2 = sylar::GetCurrentUS();
-          SYLAR_LOG_INFO(g_looger) << "i=" << i << " used: " << ((ts2 - ts) * 1.0 / batch) << " us";
+          SYLAR_LOG_INFO(g_logger) << "i=" << i << " used: " << ((ts2 - ts) * 1.0 / batch) << " us";
           ts = ts2;
       }
   }

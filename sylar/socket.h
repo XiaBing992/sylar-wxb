@@ -1,8 +1,8 @@
 /*
  * @Author: Xiabing
  * @Date: 2024-02-05 10:50:42
- * @LastEditors: WXB 1763567512@qq.com
- * @LastEditTime: 2024-02-07 22:23:34
+ * @LastEditors: Xiabing
+ * @LastEditTime: 2024-02-19 10:08:16
  * @FilePath: /sylar-wxb/sylar/socket.h
  * @Description: socket封装
  * 
@@ -141,8 +141,9 @@ public:
     * @brief 设置sockopt模板 @see setsockopt
     */
   template<class T>
-  bool setOption(int level, int option, const T& value) {
-      return setOption(level, option, &value, sizeof(T));
+  bool setOption(int level, int option, const T& value)
+  {
+    return setOption(level, option, &value, sizeof(T));
   }
 
   /**
@@ -414,8 +415,8 @@ public:
 protected:
   virtual bool init(int sock) override;
 private:
-  std::shared_ptr<SSL_CTX> m_ctx;
-  std::shared_ptr<SSL> m_ssl;
+  std::shared_ptr<SSL_CTX> ctx_;
+  std::shared_ptr<SSL> ssl_;
 };
 
 /**

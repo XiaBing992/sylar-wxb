@@ -92,7 +92,7 @@ add_definitions(-DPROJECT_DIR="${CMAKE_SOURCE_DIR}/")
 
 #------------------------------------ exec ----------------------------------------------
 add_library(sylar ${SRC})
-target_link_libraries(sylar pthread yaml-cpp jsoncpp protobuf ssl)
+target_link_libraries(sylar pthread dl yaml-cpp jsoncpp protobuf ssl crypto)
 
 
 add_subdirectory(tests)

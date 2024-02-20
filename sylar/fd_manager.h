@@ -133,9 +133,9 @@ public:
   void del(int fd);
 private:
   /// 读写锁
-  RWMutexType m_mutex;
+  RWMutexType mutex_;
   /// 文件句柄集合
-  std::vector<FdCtx::ptr> m_datas;
+  std::vector<FdCtx::ptr> datas_;
 };
 
 /// 文件句柄单例

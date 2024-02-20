@@ -18,7 +18,7 @@ namespace sylar {
 static sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
 
 static thread_local Scheduler* t_scheduler = nullptr;
-static thread_local Fiber* t_scheduler_fiber = nullptr; //当前线程的主函数
+static thread_local Fiber* t_scheduler_fiber = nullptr; //调度协程的上下文
 
 Scheduler::Scheduler(size_t threads, bool use_caller, const std::string& name)
   : name_(name)

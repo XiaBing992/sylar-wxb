@@ -2,8 +2,8 @@
  * @Author: XiaBing
  * @Date: 2024-01-12 10:23:09
  * @LastEditors: Xiabing
- * @LastEditTime: 2024-02-01 19:37:57
- * @FilePath: /sylar-wxb/sylar/fiber.cc
+ * @LastEditTime: 2024-02-19 22:38:59
+ * @FilePath: /sylar-wxb/sylar/fiber.cpp
  * @Description: 
  */
 #include <atomic>
@@ -168,7 +168,7 @@ void Fiber::swapIn()
 
 void Fiber::swapOut()
 {
-  SetThis(Scheduler::GetMainFiber());
+  SetThis(Scheduler::GetMainFiber()); // 设置当前运行的协程就是主协程
   if(swapcontext(&ctx_, &Scheduler::GetMainFiber()->ctx_)) // 将当前上下文变为空
   {
     SYLAR_ASSERT2(false, "swapcontext");
@@ -185,7 +185,7 @@ Fiber::ptr Fiber::GetThis()
   if (t_fiber) return t_fiber->shared_from_this();
 
   Fiber::ptr main_fiber(new Fiber);
-  SYLAR_ASSERT(t_fiber == main_fiber.get()); // 这里？？？
+  SYLAR_ASSERT(t_fiber == main_fiber.get());
   t_threadFiber = main_fiber;
   return t_fiber->shared_from_this();
 }
@@ -229,7 +229,7 @@ void Fiber::MainFunc()
   }
   auto raw_ptr = cur.get();
   cur.reset();
-  raw_ptr->swapOut();
+  raw_ptr->swapOut(); // 回到主协程
 
   SYLAR_ASSERT2(false, "never reach fiber_id=" + std::to_string(raw_ptr->getId()));
 }
